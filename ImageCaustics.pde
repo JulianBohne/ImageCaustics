@@ -10,18 +10,18 @@ class MovedPixel {
 }
 
 PImage image;
-float[] horizontalTargetSum;
-float[] verticalTargetSum;
+double[] horizontalTargetSum;
+double[] verticalTargetSum;
 
 ArrayList<ArrayList<MovedPixel>> currentImage;
 ArrayList<ArrayList<MovedPixel>> horizontalCurrent;
 ArrayList<ArrayList<MovedPixel>> verticalCurrent;
 
-float noiseOffset = 0.1;
-
 boolean updateImage = true;
 
 int frameOffset;
+
+double refractiveIndex = 1.45;
 
 void setup() {
   size(612, 408); // 408 ist just so the image to mp4 works
@@ -35,9 +35,9 @@ void setup() {
     horizontalCurrent.add(new ArrayList<MovedPixel>());
   }
   
-  horizontalTargetSum = new float[image.height];
+  horizontalTargetSum = new double[image.height];
   for (int y = 0; y < image.height; y++) {
-    float sum = 0;
+    double sum = 0;
     for (int x = 0; x < image.width; x++) {
       sum += gray(image.pixels[x + y*image.width]);
     }
@@ -49,9 +49,9 @@ void setup() {
     verticalCurrent.add(new ArrayList<MovedPixel>());
   }
   
-  verticalTargetSum = new float[image.width];
+  verticalTargetSum = new double[image.width];
   for (int x = 0; x < image.width; x++) {
-    float sum = 0;
+    double sum = 0;
     for (int y = 0; y < image.height; y++) {
       sum += gray(image.pixels[x + y*image.width]);
     }
@@ -68,8 +68,8 @@ void setup() {
   }
 }
 
-float gray(color pixelColor) {
-  return red(pixelColor)/255.0;
+double gray(color pixelColor) {
+  return pow(red(pixelColor)/255.0, 1.0);
 }
 
 void draw() {
@@ -83,15 +83,23 @@ void draw() {
   
   drawCurrentImage();
   
-  // Some hard coded thing
-  noiseOffset = max(0.05, noiseOffset - 0.005);
-  
   //saveFrame("frames/frame####.png");
   
 }
 
 void mousePressed() {
+  if (updateImage) {
+    createNormalMap();
+  }
+  
   updateImage = false;
+}
+
+void createNormalMap() {
+  PGraphics normalMap = createGraphics(image.width, image.height);
+  
+  // TODO: Create the normal map
+  
 }
 
 void updateCurrentImage() {
@@ -108,19 +116,25 @@ void updateCurrentImage() {
   }
   
   for (int y = 0; y < image.height; y++) {
-    double factor = horizontalTargetSum[y] / float(horizontalCurrent.get(y).size());
+    double factor = horizontalTargetSum[y] / (double)(horizontalCurrent.get(y).size());
     int index = 0;
-    for (int x = 0; x < image.width && index < horizontalCurrent.get(y).size() && horizontalTargetSum[y] != 0; x++) {
-      ArrayList<MovedPixel> current = currentImage.get(x + y * image.width);
-      while (current.size()*factor < gray(image.pixels[x + y * image.width])-noiseOffset && index < horizontalCurrent.get(y).size()) {
-        current.add(horizontalCurrent.get(y).get(index));
+    double targetSum = 0.0;
+    if (horizontalTargetSum[y] != 0) {
+      for (int x = 0; x < image.width && index < horizontalCurrent.get(y).size(); x++) {
+        ArrayList<MovedPixel> current = currentImage.get(x + y * image.width);
+        targetSum += gray(image.pixels[x + y * image.width]);
+        while (index*factor < targetSum && index < horizontalCurrent.get(y).size()) {
+          current.add(horizontalCurrent.get(y).get(index));
+          index++;
+        }
+      }
+    } else {
+      while (index < horizontalCurrent.get(y).size()) {
+        currentImage.get(floor(random(image.width)) + y * image.width).add(horizontalCurrent.get(y).get(index));
         index++;
       }
     }
-    while (index < horizontalCurrent.get(y).size()) {
-      currentImage.get(floor(random(image.width)) + y * image.width).add(horizontalCurrent.get(y).get(index));
-      index++;
-    }
+    assert(index == horizontalCurrent.get(y).size());
   }
   
   
@@ -137,37 +151,39 @@ void updateCurrentImage() {
   }
   
   for (int x = 0; x < image.width; x++) {
-    double factor = verticalTargetSum[x] / float(verticalCurrent.get(x).size());
+    double factor = verticalTargetSum[x] / (double)(verticalCurrent.get(x).size());
     int index = 0;
-    for (int y = 0; y < image.height && index < verticalCurrent.get(x).size() && verticalTargetSum[x] != 0; y++) {
-      ArrayList<MovedPixel> current = currentImage.get(x + y * image.width);
-      while (current.size()*factor < gray(image.pixels[x + y * image.width])-noiseOffset && index < verticalCurrent.get(x).size()) {
-        current.add(verticalCurrent.get(x).get(index));
+    double targetSum = 0;
+    if (verticalTargetSum[x] != 0) {
+      for (int y = 0; y < image.height && index < verticalCurrent.get(x).size(); y++) {
+        ArrayList<MovedPixel> current = currentImage.get(x + y * image.width);
+        targetSum += gray(image.pixels[x + y * image.width]);
+        while (index*factor < targetSum && index < verticalCurrent.get(x).size()) {
+          current.add(verticalCurrent.get(x).get(index));
+          index++;
+        }
+      }
+    } else {
+      while (index < verticalCurrent.get(x).size()) {
+        currentImage.get(x + floor(random(image.height)) * image.width).add(verticalCurrent.get(x).get(index));
         index++;
       }
     }
-    while (index < verticalCurrent.get(x).size()) {
-      currentImage.get(x + floor(random(image.height)) * image.width).add(verticalCurrent.get(x).get(index));
-      index++;
-    }
+    assert(index == verticalCurrent.get(x).size());
   }
 }
 
 void drawCurrentImage() {
+  float maxLight = 0;
+  for (ArrayList<MovedPixel> pixel : currentImage) {
+    maxLight = max(maxLight, pixel.size());
+  }
+  loadPixels();
   if (updateImage) {
-    float maxLight = 0;
-    for (ArrayList<MovedPixel> pixel : currentImage) {
-      maxLight = max(maxLight, pixel.size());
-    }
-    loadPixels();
     for (int i = 0; i < currentImage.size(); i++) {
       pixels[i] = color(map(currentImage.get(i).size(), 0, maxLight, 0, 255));
     }
-    updatePixels();
   } else {
-    stroke(255, 64);
-    strokeWeight(1);
-    
     float t = cos((frameCount - frameOffset) * 0.01)*0.5 + 0.5;
     
     for (int i = 0; i < currentImage.size(); i ++) {
@@ -177,8 +193,9 @@ void drawCurrentImage() {
       for (MovedPixel pixel : currentImage.get(i)) {
         float px = lerp(pixel.ogX, x, t);
         float py = lerp(pixel.ogY, y, t);
-        point(px, py);
+        pixels[floor(px) + floor(py) * image.width] = color(red(pixels[floor(px) + floor(py) * image.width]) + 255.0/maxLight);
       }
     }
   }
+  updatePixels();
 }
