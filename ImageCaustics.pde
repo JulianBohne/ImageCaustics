@@ -21,7 +21,10 @@ boolean updateImage = true;
 
 int frameOffset;
 
-double refractiveIndex = 1.45;
+float projectionDistance = 1.0;
+float refractiveIndex = 1.45;
+
+PGraphics normalMap;
 
 void setup() {
   // Lion
@@ -95,6 +98,7 @@ void draw() {
   }
   
   drawCurrentImage();
+  
   //saveFrame("frames/frame####.png");
   
 }
@@ -108,10 +112,47 @@ void mousePressed() {
 }
 
 void createNormalMap() {
-  PGraphics normalMap = createGraphics(image.width, image.height);
+  colorMode(RGB);
   
-  // TODO: Create the normal map
+  normalMap = createGraphics(image.width, image.height + 100);
+  normalMap.beginDraw();
+  normalMap.background(color(
+    map(0, -1, 1, 0, 255),
+    map(0, -1, 1, 0, 255),
+    map(1, -1, 1, 0, 255),
+    255
+  ));
   
+  normalMap.loadPixels();
+  
+  float scaleFactor = 1.0 / max(image.width, image.height);
+  
+  for (int y = 0; y < image.height; y++) {
+    for (int x = 0; x < image.width; x++) {
+      for (MovedPixel px : currentImage.get(x + y * image.width)) {
+        PVector refractDir = new PVector(x - px.ogX, y - px.ogY, 0).mult(scaleFactor).div(projectionDistance);
+        refractDir.z = 1.0;
+        refractDir.normalize();
+        
+        PVector normal = new PVector(0, 0, refractiveIndex).sub(refractDir).normalize();
+        
+        PVector sanityCheck = refract(normal).sub(refractDir);
+        if (!(sanityCheck.mag() < 0.001))
+          println("Found a bad refraction: " + refractDir);
+        
+        normalMap.pixels[px.ogX + px.ogY * image.width] = color(
+          map(normal.x, -1, 1, 0, 255),
+          map(normal.y, -1, 1, 0, 255),
+          map(normal.z, -1, 1, 0, 255),
+          255
+        );
+      }
+    }
+  }
+  normalMap.updatePixels();
+  normalMap.endDraw();
+  
+  normalMap.save("normals.png");
 }
 
 float getMeanMovement() {
@@ -227,4 +268,8 @@ void drawCurrentImage() {
     }
   }
   updatePixels();
+}
+
+PVector refract(PVector n) {
+  return new PVector(0, 0, refractiveIndex).sub(PVector.mult(n, refractiveIndex * n.z - sqrt(1 - refractiveIndex*refractiveIndex*(1 - n.z*n.z))));
 }
