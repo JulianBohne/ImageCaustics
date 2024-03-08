@@ -24,9 +24,13 @@ int frameOffset;
 double refractiveIndex = 1.45;
 
 void setup() {
+  // Lion
   size(612, 408); // 408 ist just so the image to mp4 works
-  
   image = loadImage("resources/lion-612x407.jpg");
+  
+  //// Circle / Torus
+  //size(639, 360);
+  //image = loadImage("resources/circle-639-360.jpg");
   
   image.loadPixels();
   
@@ -78,11 +82,11 @@ void draw() {
   
   if (updateImage) {
     updateCurrentImage();
+    println(getMeanMovement());
     frameOffset = frameCount;
   }
   
   drawCurrentImage();
-  
   //saveFrame("frames/frame####.png");
   
 }
@@ -100,6 +104,23 @@ void createNormalMap() {
   
   // TODO: Create the normal map
   
+}
+
+float getMeanMovement() {
+  
+  float totalMovement = 0;
+  int count = 0;
+  
+  for (int y = 0; y < image.height; y++) {
+    for (int x = 0; x < image.width; x++) {
+      for (MovedPixel px : currentImage.get(x + y * image.width)) {
+        totalMovement += dist(x, y, px.ogX, px.ogY);
+        count ++;
+      }
+    }
+  }
+  
+  return totalMovement / count;
 }
 
 void updateCurrentImage() {
