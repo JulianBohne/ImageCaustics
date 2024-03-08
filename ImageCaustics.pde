@@ -25,12 +25,20 @@ double refractiveIndex = 1.45;
 
 void setup() {
   // Lion
-  size(612, 408); // 408 ist just so the image to mp4 works
+  size(612, 408); // 408 is just so the image to mp4 works
   image = loadImage("resources/lion-612x407.jpg");
   
   //// Circle / Torus
   //size(639, 360);
   //image = loadImage("resources/circle-639-360.jpg");
+  
+  //// Lines
+  //size(612, 322); // 322 is just so the image to mp4 works
+  //image = loadImage("resources/lines-612x321.jpg");
+  
+  //// Moon
+  //size(716, 694); // 694 is just so the image to mp4 works
+  //image = loadImage("resources/moon-716x693.jpg");
   
   image.loadPixels();
   
@@ -73,7 +81,7 @@ void setup() {
 }
 
 double gray(color pixelColor) {
-  return pow(red(pixelColor)/255.0, 1.0);
+  return pow(red(pixelColor)/255.0, 2.0);
 }
 
 void draw() {
