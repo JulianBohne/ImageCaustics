@@ -6,7 +6,6 @@ class MovedPixel {
     this.ogX = ogX;
     this.ogY = ogY;
   }
-  
 }
 
 PImage image;
@@ -26,23 +25,30 @@ float refractiveIndex = 1.45;
 
 PGraphics normalMap;
 
-void setup() {
+void settings() {
+  
+  //// Albert Einstein
+  //image = loadImage("resources/albert.jpg");
+  
   // Lion
-  size(612, 408); // 408 is just so the image to mp4 works
   image = loadImage("resources/lion-612x407.jpg");
   
   //// Circle / Torus
-  //size(639, 360);
   //image = loadImage("resources/circle-639-360.jpg");
   
   //// Lines
-  //size(612, 322); // 322 is just so the image to mp4 works
   //image = loadImage("resources/lines-612x321.jpg");
   
   //// Moon
-  //size(716, 694); // 694 is just so the image to mp4 works
   //image = loadImage("resources/moon-716x693.jpg");
   
+  //// Skull xray
+  //image = loadImage("resources/skull.jpg");
+  
+  size(image.width + image.width % 2, image.height + image.height % 2); // Just making sure the size is even
+}
+
+void setup() {
   image.loadPixels();
   
   horizontalCurrent = new ArrayList<ArrayList<MovedPixel>>(image.height);
@@ -98,9 +104,6 @@ void draw() {
   }
   
   drawCurrentImage();
-  
-  //saveFrame("frames/frame####.png");
-  
 }
 
 void mousePressed() {
@@ -114,7 +117,7 @@ void mousePressed() {
 void createNormalMap() {
   colorMode(RGB);
   
-  normalMap = createGraphics(image.width, image.height + 100);
+  normalMap = createGraphics(image.width, image.height);
   normalMap.beginDraw();
   normalMap.background(color(
     map(0, -1, 1, 0, 255),
@@ -250,20 +253,21 @@ void drawCurrentImage() {
   }
   loadPixels();
   if (updateImage) {
-    for (int i = 0; i < currentImage.size(); i++) {
-      pixels[i] = color(map(currentImage.get(i).size(), 0, maxLight, 0, 255));
+    for (int y = 0; y < image.height; y++) {
+      for (int x = 0; x < image.width; x++) {
+        pixels[x + y * width] = color(map(currentImage.get(x + y * image.width).size(), 0, maxLight, 0, 255));
+      }
     }
   } else {
     float t = cos((frameCount - frameOffset) * 0.01)*0.5 + 0.5;
     
-    for (int i = 0; i < currentImage.size(); i ++) {
-      int x = i % image.width;
-      int y = i / image.width;
-      
-      for (MovedPixel pixel : currentImage.get(i)) {
-        float px = lerp(pixel.ogX, x, t);
-        float py = lerp(pixel.ogY, y, t);
-        pixels[floor(px) + floor(py) * image.width] = color(red(pixels[floor(px) + floor(py) * image.width]) + 255.0/maxLight);
+    for (int y = 0; y < image.height; y++) {
+      for (int x = 0; x < image.width; x++) {
+        for (MovedPixel pixel : currentImage.get(x + y * image.width)) {
+          float px = lerp(pixel.ogX, x, t);
+          float py = lerp(pixel.ogY, y, t);
+          pixels[floor(px) + floor(py) * width] = color(red(pixels[floor(px) + floor(py) * width]) + 255.0/maxLight);
+        }
       }
     }
   }
