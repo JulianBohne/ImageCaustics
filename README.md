@@ -15,7 +15,7 @@ https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-
 4. Copy paste the `normals.png` into the `resources` folder of `ImageCausticsViewer`.
 5. Open the `ImageCausticsViewer.pde` file and make sure the `loadImage` line loads the correct normals.
 6. Press the play button in the top left and you should be able to view the caustics and slightly rotate the virtual glass with your mouse.
-    1. You can also move the glass closer and further from the screen with the up and down arrows. 
+    1. You can also move the glass closer and further from the screen with the up and down arrows.
 
 ## How does it work?
 > Note: This is simplified
@@ -30,3 +30,4 @@ https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-
 1. Holes can be difficult for the algorithm (see the circle/torus example image)
 2. If there are multiple elements that can't reach each other by a single horizontal or vertical move, the brightness will probably be off
 3. The images you get in the viewer are more fuzzy (see the dot example image for a big fail in that regard)
+4. I'm not taking fresnel into account, so the light intensities might be a bit off (especially when roatating the glass in the viewer)
