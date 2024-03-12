@@ -17,6 +17,8 @@ ArrayList<ArrayList<MovedPixel>> horizontalCurrent;
 ArrayList<ArrayList<MovedPixel>> verticalCurrent;
 
 boolean updateImage = true;
+int iterationCount = 0;
+int minimumIterations = 5;
 
 int frameOffset;
 
@@ -24,6 +26,8 @@ float projectionDistance = 1.0;
 float refractiveIndex = 1.45;
 
 PGraphics normalMap;
+
+float previousMeanMovement = Float.POSITIVE_INFINITY;
 
 void settings() {
   
@@ -44,6 +48,9 @@ void settings() {
   
   //// Skull xray
   //image = loadImage("resources/skull.jpg");
+  
+  //// Large Eye (for me it doesn't display while generating, but the output normalmap is fine)
+  //image = loadImage("resources/eye.jpg");
   
   size(image.width + image.width % 2, image.height + image.height % 2); // Just making sure the size is even
 }
@@ -99,7 +106,6 @@ void draw() {
   
   if (updateImage) {
     updateCurrentImage();
-    println(getMeanMovement());
     frameOffset = frameCount;
   }
   
@@ -188,6 +194,8 @@ void updateCurrentImage() {
     pixel.sort((a, b) -> Integer.compare(a.ogX, b.ogX));
   }
   
+  boolean isNoisy = false;
+  
   for (int y = 0; y < image.height; y++) {
     double factor = horizontalTargetSum[y] / (double)(horizontalCurrent.get(y).size());
     int index = 0;
@@ -203,6 +211,7 @@ void updateCurrentImage() {
       }
     } else {
       while (index < horizontalCurrent.get(y).size()) {
+        isNoisy |= true;
         currentImage.get(floor(random(image.width)) + y * image.width).add(horizontalCurrent.get(y).get(index));
         index++;
       }
@@ -238,12 +247,26 @@ void updateCurrentImage() {
       }
     } else {
       while (index < verticalCurrent.get(x).size()) {
+        isNoisy |= true;
         currentImage.get(x + floor(random(image.height)) * image.width).add(verticalCurrent.get(x).get(index));
         index++;
       }
     }
     assert(index == verticalCurrent.get(x).size());
   }
+  
+  iterationCount++;
+  
+  float meanMovement = getMeanMovement();
+  if (isNoisy) println("Image is still noisy");
+  println(meanMovement);
+  
+  if (!isNoisy && meanMovement > previousMeanMovement && iterationCount >= minimumIterations) {
+    updateImage = false;
+    createNormalMap();
+  }
+  
+  previousMeanMovement = meanMovement;
 }
 
 void drawCurrentImage() {

@@ -1,6 +1,6 @@
 
 float refractiveIndex = 1.45;
-float brightness = 25.0;
+float brightness = 55.0;
 float projectionDistance = 1.0;
 
 PImage rawNormalMap;
@@ -32,7 +32,7 @@ void setup() {
       map(red(normalMap.pixels[i]), 0, 255, -1, 1),
       map(green(normalMap.pixels[i]), 0, 255, -1, 1),
       map(blue(normalMap.pixels[i]), 0, 255, -1, 1)
-    );
+    ).normalize();
   }
   normalMap.endDraw();
 }
@@ -95,6 +95,10 @@ void draw() {
     }
   }
   updatePixels();
+  
+  if (keyPressed && key == 'r') {
+    saveFrame("frames/frame####.png");
+  }
 }
 
 PVector refract(PVector l, PVector n, float r) {
