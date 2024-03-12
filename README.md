@@ -8,6 +8,10 @@ Here's an example:
 https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797
 > Note: I'm not 100% convinced, that I'm calculating everything correctly. If you know a program where I can double check my results, that would be nice! (I couldn't get proper caustics to work in Blender with my crappy laptop.)
 
+Here's the normal map corresponding to the eye (not obvious, right?! :D)
+
+<img src="https://github.com/JulianBohne/ImageCaustics/assets/57051885/ce3afa87-3573-4b1f-82b6-5a3a68614e38" alt="Normal map of the eye image" width=500/>
+
 ## Usage
 0. Make sure you got [processing](https://www.processing.org) installed (this was written in it).
 1. Put your (grayscale) image that you want to convert into the `resources` folder of `ImageCausticsGenerator`.
