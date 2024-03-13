@@ -3,9 +3,9 @@ Turn an image into a normal map that refracts light in just the right way to cre
 
 For a nice explanation of what's happening (and the inspiration for this), look at this video: https://m.youtube.com/watch?v=wk67eGXtbIw
 
-Here's an example:
+Here's an example (if your device supports it, a higher quality mp4 is down [below](#eye-mp4)):
 
-<video src="https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797" controls>https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797</video>
+![output](https://github.com/JulianBohne/ImageCaustics/assets/57051885/ba203e25-70d4-4b14-8b97-37b233817368)
 
 > Note: I'm not 100% convinced, that I'm calculating everything correctly. If you know a program where I can double check my results, that would be nice! (I couldn't get proper caustics to work in Blender with my crappy laptop.)
 
@@ -37,3 +37,7 @@ Here's the normal map corresponding to the eye (not obvious, right?! :D)
 2. If there are multiple elements that can't reach each other by a single horizontal or vertical move, the brightness will probably be off
 3. The images you get in the viewer are more fuzzy (see the dot example image for a big fail in that regard)
 4. I'm not taking fresnel into account, so the light intensities might be a bit off (especially when roatating the glass in the viewer)
+
+## Eye MP4
+https://github.com/JulianBohne/ImageCaustics/assets/57051885/08efc921-ef75-45c6-b714-491c0b84ae3f
+
