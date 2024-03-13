@@ -5,7 +5,7 @@ For a nice explanation of what's happening (and the inspiration for this), look 
 
 Here's an example:
 
-<video src="https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797" controls></video>
+<video src="https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797" controls>https://github.com/JulianBohne/ImageCaustics/assets/57051885/a94a3ccb-d4bf-4bfa-b880-db8e5ed37797</video>
 
 > Note: I'm not 100% convinced, that I'm calculating everything correctly. If you know a program where I can double check my results, that would be nice! (I couldn't get proper caustics to work in Blender with my crappy laptop.)
 
