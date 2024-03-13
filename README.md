@@ -7,7 +7,7 @@ Here's an example (if your device supports it, a higher quality mp4 is down [bel
 
 ![output](https://github.com/JulianBohne/ImageCaustics/assets/57051885/ba203e25-70d4-4b14-8b97-37b233817368)
 
-> Note: I'm not 100% convinced, that I'm calculating everything correctly. If you know a program where I can double check my results, that would be nice! (I couldn't get proper caustics to work in Blender with my crappy laptop.)
+> Note: I'm not 100% convinced, that I'm calculating everything correctly (especially the direction of the normals could be exactly opposite). If you know a program where I can double check my results, that would be nice! (I couldn't get proper caustics to work in Blender with my crappy laptop.)
 
 Here's the normal map corresponding to the eye (not obvious, right?! :D)
 
